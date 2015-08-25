@@ -1,7 +1,9 @@
 #pragma once
 
-#include <SDL.h>
 #include <memory>
+
+#include <SDL.h>
+#include <SDL_ttf.h>
 
 
 namespace sdl
@@ -14,6 +16,7 @@ namespace sdl
 	using SDL_TexturePtr = sdl_ptr<SDL_Texture, decltype(SDL_DestroyTexture) *>;
 	using SDL_RendererPtr = sdl_ptr<SDL_Renderer, decltype(SDL_DestroyRenderer) *>;
 	using SDL_SurfacePtr = sdl_ptr<SDL_Surface, decltype(SDL_FreeSurface) *>;
+	using SDL_FontPtr = sdl_ptr<TTF_Font, decltype(TTF_CloseFont) *>;
 
 
 	inline auto make_sdl_ptr(SDL_Window * win) -> SDL_WindowPtr
@@ -37,5 +40,11 @@ namespace sdl
 	inline auto make_sdl_ptr(SDL_Surface * surf) -> SDL_SurfacePtr
 	{
 		return SDL_SurfacePtr(surf, SDL_FreeSurface);
+	}
+
+
+	inline auto make_sdl_ptr(TTF_Font * font) -> SDL_FontPtr
+	{
+		return SDL_FontPtr(font, TTF_CloseFont);
 	}
 }

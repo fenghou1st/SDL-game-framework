@@ -2,8 +2,10 @@
 
 #include <iostream>
 #include <string>
+
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "sdl_log.h"
 #include "sdl_ptr.h"
@@ -35,7 +37,7 @@ namespace sdl
 	*
 	* Paths returned will be Lessons/res/subDir
 	*/
-	std::string getResourcePath(const std::string & subDir = "")
+	std::string get_resource_path(const std::string & subDir = "")
 	{
 		static std::string baseRes;
 
@@ -72,7 +74,7 @@ namespace sdl
 	* @param x  The x coordinate to draw to
 	* @param y  The y coordinate to draw to
 	*/
-	void renderTexture(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex, const SDL_Rect * clip,
+	void render_texture(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex, const SDL_Rect * clip,
 		int x, int y, TEXTURE_ORIGIN texture_origin = TEXTURE_ORIGIN::CENTER)
 	{
 		SDL_Rect dst;
@@ -128,9 +130,32 @@ namespace sdl
 	}
 
 
-	void renderTexture(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex,
+	void render_texture(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex,
 		int x, int y, TEXTURE_ORIGIN texture_origin = TEXTURE_ORIGIN::CENTER)
 	{
-		renderTexture(ren, tex, nullptr, x, y, texture_origin);
+		render_texture(ren, tex, nullptr, x, y, texture_origin);
+	}
+
+
+	SDL_TexturePtr render_text(const SDL_RendererPtr & ren, const std::string & message,
+		const SDL_FontPtr & font, SDL_Color color)
+	{
+		SDL_TexturePtr tex(nullptr, SDL_DestroyTexture);
+
+		auto surf = make_sdl_ptr(TTF_RenderUTF8_Blended(font.get(), message.c_str(), color));
+		if (surf == nullptr)
+		{
+			log::error("TTF_RenderText");
+			return tex;
+		}
+
+		tex = make_sdl_ptr(SDL_CreateTextureFromSurface(ren.get(), surf.get()));
+		if (tex == nullptr)
+		{
+			log::error("SDL_CreateTextureFromSurface");
+			return tex;
+		}
+
+		return tex;
 	}
 }

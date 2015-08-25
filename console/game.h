@@ -4,10 +4,11 @@
 #include <cassert>
 #include <vector>
 
-#include "common/common.h"
+#include "game/common.h"
 
 #include "sdl_log.h"
 #include "sdl_ptr.h"
+#include "game_base.h"
 
 
 namespace sdl
@@ -16,7 +17,13 @@ namespace sdl
 
 	const int INIT_SCREEN_WIDTH = 1600;
 	const int INIT_SCREEN_HEIGHT = 900;
+	const string GAME_TITLE = "My Game";
+	const int FRAME_RATE = 60;
 	const int TILE_SIZE = 64;
+	const string CHAR_FILE = "character.png";
+	const string FONT_FILE = "msyh.ttc";
+	const int FONT_SIZE = 36;
+	const SDL_Color FONT_COLOR = { 255, 255, 255, 255 };
 
 
 	class State
@@ -25,6 +32,7 @@ namespace sdl
 		State() :
 			screen_width(INIT_SCREEN_WIDTH),
 			screen_height(INIT_SCREEN_HEIGHT),
+			frame_count(0),
 			quit(false),
 			curr_clip(-1),
 			curr_x(INIT_SCREEN_WIDTH / 2),
@@ -33,6 +41,7 @@ namespace sdl
 
 		int screen_width;
 		int screen_height;
+		uint64_t frame_count;
 		bool quit;
 		int curr_clip;
 		int curr_x;
@@ -40,14 +49,13 @@ namespace sdl
 	};
 
 
-	class Game
+	class Game : public GameBase
 	{
 	public:
 		Game();
 		~Game();
 
 		bool is_ok() const { return _ok; };
-		bool init();
 		bool run();
 
 	private:
@@ -65,6 +73,7 @@ namespace sdl
 		State _state;
 		SDL_WindowPtr _window;
 		SDL_RendererPtr _renderer;
+		SDL_FontPtr _font;
 		SDL_TexturePtr _character;
 		vector<SDL_Rect> _char_clips;
 	};

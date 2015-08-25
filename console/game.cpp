@@ -1,6 +1,8 @@
 #include "game.h"
 
 #include <string>
+#include <chrono>
+#include <thread>
 
 #include <SDL.h>
 
@@ -17,20 +19,48 @@ namespace
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 sdl::Game::Game()
-	: _ok(false), _window(nullptr, SDL_DestroyWindow),
-	_renderer(nullptr, SDL_DestroyRenderer), _character(nullptr, SDL_DestroyTexture)
+	: _ok(false), _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer),
+	_font(nullptr, TTF_CloseFont), _character(nullptr, SDL_DestroyTexture)
 {
-	log::init();
-
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	if (!GameBase::is_ok())
 	{
-		log::error("SDL_Init");
+		log::error("GameBase::is_ok");
 		return;
 	}
 
-	if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG)
+	_window = make_sdl_ptr(SDL_CreateWindow(GAME_TITLE.c_str(), 100, 100, _state.screen_width, _state.screen_height, SDL_WINDOW_SHOWN));
+	if (_window == nullptr)
 	{
-		log::error("IMG_Init");
+		log::error("SDL_CreateWindow");
+		return;
+	}
+
+	_renderer = make_sdl_ptr(SDL_CreateRenderer(_window.get(), -1, SDL_RENDERER_ACCELERATED));
+	if (_renderer == nullptr)
+	{
+		log::error("SDL_CreateRenderer");
+		return;
+	}
+
+	string images_path = get_resource_path("images");
+	_character = make_sdl_ptr(IMG_LoadTexture(_renderer.get(), string(images_path + CHAR_FILE).c_str()));
+	if (_character == nullptr)
+	{
+		log::error("IMG_LoadTexture");
+		return;
+	}
+
+	string fonts_path = get_resource_path("fonts");
+	_font = make_sdl_ptr(TTF_OpenFont((fonts_path + FONT_FILE).c_str(), FONT_SIZE));
+	if (_font == nullptr)
+	{
+		log::error("TTF_OpenFont");
+		return;
+	}
+
+	if (!_init_char())
+	{
+		log::error("_init_char");
 		return;
 	}
 
@@ -39,53 +69,35 @@ sdl::Game::Game()
 
 
 sdl::Game::~Game()
-{
-	IMG_Quit();
-	SDL_Quit();
-}
-
-
-bool sdl::Game::init()
-{
-	_window = make_sdl_ptr(SDL_CreateWindow("My Game", 100, 100, _state.screen_width, _state.screen_height, SDL_WINDOW_SHOWN));
-	if (_window == nullptr)
-	{
-		log::error("SDL_CreateWindow");
-		return false;
-	}
-
-	_renderer = make_sdl_ptr(SDL_CreateRenderer(_window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
-	if (_renderer == nullptr)
-	{
-		log::error("SDL_CreateRenderer");
-		return false;
-	}
-
-	string resPath = getResourcePath("Lesson5");
-	_character = make_sdl_ptr(IMG_LoadTexture(_renderer.get(), string(resPath + "image.png").c_str()));
-	if (_character == nullptr)
-	{
-		log::error("IMG_LoadTexture");
-		return false;
-	}
-
-	if (!_init_char())
-	{
-		log::error("_init_char");
-		return false;
-	}
-
-	return true;
-}
+{}
 
 
 bool sdl::Game::run()
 {
+	typedef chrono::time_point<chrono::steady_clock, chrono::nanoseconds> time_point_nano;
+
+	uint64_t nano_seconds_per_frame;
+	chrono::nanoseconds duration_per_frame;
+	time_point_nano frame_end;
+	if (FRAME_RATE > 0)
+	{
+		nano_seconds_per_frame = 1000000000 / FRAME_RATE;
+		duration_per_frame = chrono::nanoseconds(nano_seconds_per_frame);
+		frame_end = chrono::steady_clock::now() + duration_per_frame;
+	}
+
 	while (!_state.quit)
 	{
 		_check_events();
 		_check_inputs();
 		_render();
+
+		++_state.frame_count;
+		if (FRAME_RATE > 0)
+		{
+			while (chrono::steady_clock::now() < frame_end) this_thread::sleep_for(1ms);
+			frame_end += duration_per_frame;
+		}
 	}
 
 	return true;
@@ -183,8 +195,32 @@ void sdl::Game::_render()
 {
 	SDL_RenderClear(_renderer.get());
 
+	// tips
+	string tips = "A, D, S, W: move;  NumPad 4, 5, 7, 8: change color;  ESC: quit";
+	auto text_tips = render_text(_renderer, tips, _font, FONT_COLOR);
+	render_texture(_renderer, text_tips, _state.screen_width / 2, _state.screen_height / 2);
+
+	// frame rate
+	static auto last_time = chrono::steady_clock::now();
+	static auto last_frame_count = _state.frame_count;
+	static char frame_rate_buf[100] = "0";
+	auto curr_time = chrono::steady_clock::now();
+	if (last_time + chrono::seconds(1) <= curr_time)
+	{
+		auto curr_frame_count = _state.frame_count;
+		chrono::duration<double> elapsed_seconds = curr_time - last_time;
+		auto frame_rate = (curr_frame_count - last_frame_count) / elapsed_seconds.count();
+		sprintf(frame_rate_buf, "%.2f", frame_rate);
+
+		last_time = curr_time;
+		last_frame_count = curr_frame_count;
+	}
+	auto text_frame_rate = render_text(_renderer, frame_rate_buf, _font, FONT_COLOR);
+	render_texture(_renderer, text_frame_rate, 0, _state.screen_height - 1, TEXTURE_ORIGIN::BOTTOM_LEFT);
+
+	// character
 	if (_state.curr_clip >= 0)
-		renderTexture(_renderer, _character, &_char_clips[_state.curr_clip], _state.curr_x, _state.curr_y);
+		render_texture(_renderer, _character, &_char_clips[_state.curr_clip], _state.curr_x, _state.curr_y);
 
 	SDL_RenderPresent(_renderer.get());
 }
