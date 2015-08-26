@@ -3,6 +3,13 @@
 #include <cstdio>
 #include <cassert>
 #include <vector>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+#include <fstream>
+
+#define SI_SUPPORT_IOSTREAMS
+#include "simple_ini/SimpleIni.h"
 
 #include "game/common.h"
 
@@ -15,35 +22,35 @@ namespace sdl
 {
 	using namespace std;
 
-	const int INIT_SCREEN_WIDTH = 1600;
-	const int INIT_SCREEN_HEIGHT = 900;
-	const string GAME_TITLE = "My Game";
-	const int FRAME_RATE = 60;
-	const int TILE_SIZE = 64;
+	const string ORG_NAME = "Kazesoft";
+	const string APP_NAME = "My Game";
+	const string INI_FILE = "game.ini";
+	const string SAVE_FILE = "save.dat";
+	const char SAVE_FILE_TAG[8] = { 'S', 'A', 'V', '.' , '0' , '0' , '0' , '1' };
 	const string CHAR_FILE = "character.png";
 	const string FONT_FILE = "msyh.ttc";
+	const int TILE_SIZE = 64;
 	const int FONT_SIZE = 36;
 	const SDL_Color FONT_COLOR = { 255, 255, 255, 255 };
+
+
+	class Config
+	{
+	public:
+		int screen_width;
+		int screen_height;
+		int frame_rate;
+	};
 
 
 	class State
 	{
 	public:
-		State() :
-			screen_width(INIT_SCREEN_WIDTH),
-			screen_height(INIT_SCREEN_HEIGHT),
-			frame_count(0),
-			quit(false),
-			curr_clip(-1),
-			curr_x(INIT_SCREEN_WIDTH / 2),
-			curr_y(INIT_SCREEN_HEIGHT / 2)
-		{}
+		State() : quit(false), frame_count(0) {}
 
-		int screen_width;
-		int screen_height;
-		uint64_t frame_count;
 		bool quit;
-		int curr_clip;
+		uint64_t frame_count;
+		int curr_color;
 		int curr_x;
 		int curr_y;
 	};
@@ -59,6 +66,14 @@ namespace sdl
 		bool run();
 
 	private:
+		bool _init_pref_path();
+		bool _load_config();
+		bool _save_config();
+		bool _load_state();
+		bool _load_default_state();
+		bool _save_state();
+		bool _create_basic_objects();
+		bool _load_resources();
 		bool _init_char();
 		void _check_events();
 		void _check_inputs();
@@ -70,6 +85,9 @@ namespace sdl
 		void _render_tiled_background(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex, int w = 0, int h = 0);
 
 		bool _ok;
+		string _pref_path;
+		CSimpleIniA _ini;
+		Config _config;
 		State _state;
 		SDL_WindowPtr _window;
 		SDL_RendererPtr _renderer;

@@ -4,8 +4,14 @@
     <Filter Include="main">
       <UniqueIdentifier>{09cfdf5a-9b18-4d48-b13f-d49f0ab29962}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game">
-      <UniqueIdentifier>{5ae320ba-ffa7-4076-975c-5f62c159c333}</UniqueIdentifier>
+    <Filter Include="[libs]">
+      <UniqueIdentifier>{5d4f229b-e9b7-4335-8c2c-c64d26dd2240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="[libs]\game">
+      <UniqueIdentifier>{52d153ad-eee9-42ec-b4ad-b89f7f1952d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="[libs]\simple_ini">
+      <UniqueIdentifier>{8a5ce474-a448-4f17-8436-6b21729116df}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,8 +30,11 @@
     <ClInclude Include="game_base.h">
       <Filter>main</Filter>
     </ClInclude>
-    <ClInclude Include="game\common.h">
-      <Filter>game</Filter>
+    <ClInclude Include="[libs]\game\common.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="[libs]\simple_ini\SimpleIni.h">
+      <Filter>[libs]\simple_ini</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
