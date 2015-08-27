@@ -25,7 +25,7 @@ namespace sdl
 		namespace expr = boost::log::expressions;
 
 
-		inline void init()
+		inline void init(const string & pref_path)
 		{
 			logging::add_console_log(std::clog,
 				keywords::filter = (logging::trivial::severity >= logging::trivial::info),
@@ -36,13 +36,13 @@ namespace sdl
 				);
 
 			logging::add_file_log(
-				keywords::file_name = "sdl_%Y-%m-%d.log",
+				keywords::file_name = pref_path + "game_%Y-%m-%d.log",
 				keywords::open_mode = std::ios_base::app,
 				keywords::rotation_size = 10 * 1024 * 1024,
 				keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
 				keywords::auto_flush = true,
 				keywords::format = (expr::stream
-					<< "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S%f")
+					<< "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
 					<< "] <" << logging::trivial::severity << "> " << expr::smessage
 					)
 				);

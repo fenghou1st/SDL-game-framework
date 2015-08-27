@@ -36,6 +36,9 @@
     <ClInclude Include="[libs]\simple_ini\SimpleIni.h">
       <Filter>[libs]\simple_ini</Filter>
     </ClInclude>
+    <ClInclude Include="[libs]\game\data_file_helper.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -46,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="game_base.cpp">
       <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="[libs]\game\data_file_helper.cpp">
+      <Filter>[libs]\game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

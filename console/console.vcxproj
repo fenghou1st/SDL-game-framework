@@ -155,12 +155,14 @@
     <ClInclude Include="sdl_log.h" />
     <ClInclude Include="sdl_ptr.h" />
     <ClInclude Include="[libs]\game\common.h" />
+    <ClInclude Include="[libs]\game\data_file_helper.h" />
     <ClInclude Include="[libs]\simple_ini\SimpleIni.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_base.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="[libs]\game\data_file_helper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

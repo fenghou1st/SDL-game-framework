@@ -1,34 +1,177 @@
 #include "game.h"
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+#include <fstream>
 #include <string>
 #include <chrono>
 #include <thread>
-#include <fstream>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 
 #include <SDL.h>
 
+#define SI_SUPPORT_IOSTREAMS
+#include "simple_ini/SimpleIni.h"
+
+#include "game/data_file_helper.h"
+
+#include "sdl_log.h"
 #include "sdl_utils.h"
+#include "sdl_ptr.h"
+#include "game_base.h"
 
 using namespace std;
+using namespace fenghou;
+using namespace fenghou::game;
 using namespace sdl;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace
+// Implementer Interface ///////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace sdl
 {
+	// Classes /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	class Config
+	{
+	public:
+		int screen_width;
+		int screen_height;
+		int frame_rate;
+		string screen_tips;
+	};
+
+
+	class State
+	{
+	public:
+		State() : quit(false), frame_count(0) {}
+
+		bool quit;
+		uint64_t frame_count;
+		int_fast8_t curr_color;
+		int_fast16_t curr_x;
+		int_fast16_t curr_y;
+		string screen_tips;
+	};
+
+
+	class Game::Impl : public GameBase
+	{
+	public:
+		Impl();
+		~Impl();
+
+		bool is_ok() const { return _ok; }
+		bool run();
+
+	private:
+		bool _load_config();
+		bool _save_config();
+		bool _load_state();
+		bool _load_default_state();
+		bool _save_state();
+		bool _create_basic_objects();
+		bool _load_resources();
+		bool _init_char();
+		void _check_events();
+		void _check_inputs();
+		void _check_keyboard_inputs();
+		void _check_mouse_inputs();
+		void _check_joystick_inputs();
+		void _render();
+
+		bool _ok;
+		CSimpleIniA _ini;
+		Config _config;
+		State _state;
+		SDL_WindowPtr _window;
+		SDL_RendererPtr _renderer;
+		SDL_FontPtr _font;
+		SDL_TexturePtr _character;
+		vector<SDL_Rect> _char_clips;
+	};
+
+	// Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-sdl::Game::Game()
-	: _ok(false), _ini(true),
+// Local Field /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace
+{
+	// Classes /////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// When not sepecify tile width/height, it will use the actual width/height of the tile
+	void render_tiled_background(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex,
+		int screen_width, int screen_height, int tile_w = 0, int tile_h = 0)
+	{
+		SDL_Rect dst;
+		if (tile_w <= 0 || tile_h <= 0)
+		{
+			int _w, _h;
+			SDL_QueryTexture(tex.get(), nullptr, nullptr, &_w, &_h);
+			if (tile_w <= 0) tile_w = _w;
+			if (tile_h <= 0) tile_h = _h;
+		}
+
+		dst.w = tile_w;
+		dst.h = tile_h;
+
+		for (int x = 0; x < screen_width; x += tile_w)
+		{
+			for (int y = 0; y < screen_height; y += tile_h)
+			{
+				dst.x = x;
+				dst.y = y;
+				SDL_RenderCopy(ren.get(), tex.get(), nullptr, &dst);
+			}
+		}
+	}
+
+	// Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////
+
+	const string ORG_NAME = "Kazesoft";
+	const string APP_NAME = "My Game";
+	const string INI_FILE = "game.ini";
+	const string SAVE_FILE = "save.dat";
+	const char SAVE_FILE_TAG[8] = { 'S', 'A', 'V', '.' , '0' , '0' , '0' , '1' };
+	const string CHAR_FILE = "character.png";
+	const string FONT_FILE = "msyh.ttc";
+	const int TILE_SIZE = 64;
+	const int FONT_SIZE = 36;
+	const SDL_Color FONT_COLOR = { 255, 255, 255, 255 };
+}
+
+// Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//// Game //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Game::Game() : impl(new Impl) {}
+
+
+Game::~Game() {}
+
+
+bool Game::is_ok() const { return impl->is_ok(); }
+
+
+bool Game::run() { return impl->run(); }
+
+//// Game::Impl ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Game::Impl::Impl()
+	: GameBase(ORG_NAME, APP_NAME), _ok(false), _ini(true),
 	_window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer),
 	_font(nullptr, TTF_CloseFont), _character(nullptr, SDL_DestroyTexture)
 {
 	if (!GameBase::is_ok())			{ log::error("GameBase::is_ok");				return; }
-
-	if (!_init_pref_path())			{ log::error("Game::_init_pref_path");			return; }
 
 	if (!_load_config())			{ log::error("Game::_load_config");				return; }
 
@@ -44,14 +187,14 @@ sdl::Game::Game()
 }
 
 
-sdl::Game::~Game()
+Game::Impl::~Impl()
 {
 	_save_state();
 	_save_config();
 }
 
 
-bool sdl::Game::run()
+bool Game::Impl::run()
 {
 	typedef chrono::time_point<chrono::steady_clock, chrono::nanoseconds> time_point_nano;
 
@@ -83,30 +226,9 @@ bool sdl::Game::run()
 }
 
 
-bool sdl::Game::_init_pref_path()
+bool Game::Impl::_load_config()
 {
-	auto base_path = SDL_GetPrefPath(ORG_NAME.c_str(), APP_NAME.c_str());
-	if (base_path == nullptr)
-	{
-		log::error("SDL_GetPrefPath");
-		return false;
-	}
-	_pref_path = base_path;
-	SDL_free(base_path);
-
-	if (!boost::filesystem::exists(_pref_path) && !boost::filesystem::create_directories(_pref_path))
-	{
-		log::error("create_directories");
-		return false;
-	}
-
-	return true;
-}
-
-
-bool sdl::Game::_load_config()
-{
-	string ini_file = _pref_path + INI_FILE;
+	string ini_file = GameBase::get_pref_path() + INI_FILE;
 	if (!boost::filesystem::exists(ini_file)) _ini.SaveFile(ini_file.c_str());
 	SI_Error rc = _ini.LoadFile(ini_file.c_str());
 	if (rc < 0) return false;
@@ -114,79 +236,80 @@ bool sdl::Game::_load_config()
 	_config.screen_width = _ini.GetLongValue("System", "Screen Width", 1600);
 	_config.screen_height = _ini.GetLongValue("System", "Screen Height", 900);
 	_config.frame_rate = _ini.GetLongValue("System", "Frame Rate", 60);
+	_config.screen_tips = _ini.GetValue("System", "Screen Tips");
 
 	return true;
 }
 
 
-bool sdl::Game::_save_config()
+bool Game::Impl::_save_config()
 {
-	string ini_file = _pref_path + INI_FILE;
+	string ini_file = GameBase::get_pref_path() + INI_FILE;
 
 	_ini.SetLongValue("System", "Screen Width", _config.screen_width);
 	_ini.SetLongValue("System", "Screen Height", _config.screen_height);
 	_ini.SetLongValue("System", "Frame Rate", _config.frame_rate);
+	_ini.SetValue("System", "Screen Tips", _config.screen_tips.c_str());
 
 	auto rc = _ini.SaveFile(ini_file.c_str());
 	return rc >= 0;
 }
 
 
-bool sdl::Game::_load_state()
+bool Game::Impl::_load_state()
 {
-	string save_file = _pref_path + SAVE_FILE;
+	string save_file = GameBase::get_pref_path() + SAVE_FILE;
 	
 	if (!boost::filesystem::exists(save_file) || boost::filesystem::file_size(save_file) <= 0)
 		return _load_default_state();
 
 	ifstream state(save_file, ios::binary);
-	char buf[8];
 
-	state.read(buf, 8);
-	if (memcmp(SAVE_FILE_TAG, buf, 8) != 0)
+	char file_tag[sizeof(SAVE_FILE_TAG)];
+	data_file_helper::read(state, file_tag);
+	if (memcmp(SAVE_FILE_TAG, file_tag, 8) != 0)
 	{
 		log::error("Incompatible save file");
 		return _load_default_state();
 	}
 
-	state.read(buf, sizeof(int));
-	_state.curr_color = *reinterpret_cast<int *>(buf);
-
-	state.read(buf, sizeof(int));
-	_state.curr_x = *reinterpret_cast<int *>(buf);
-
-	state.read(buf, sizeof(int));
-	_state.curr_y = *reinterpret_cast<int *>(buf);
+	data_file_helper::read(state, _state.curr_color);
+	data_file_helper::read(state, _state.curr_x);
+	data_file_helper::read(state, _state.curr_y);
+	data_file_helper::read(state, _state.screen_tips);
 
 	return true;
 }
 
 
-bool sdl::Game::_load_default_state()
+// TODO: load data from platform independent format, such as json
+bool Game::Impl::_load_default_state()
 {
 	_state.curr_color = -1;
 	_state.curr_x = _config.screen_width / 2;
 	_state.curr_y = _config.screen_height / 2;
+	_state.screen_tips = "A, D, S, W: move;  NumPad 4, 5, 7, 8: change color;  ESC: quit";
 
 	return true;
 }
 
 
-bool sdl::Game::_save_state()
+bool Game::Impl::_save_state()
 {
-	string save_file = _pref_path + SAVE_FILE;
+	string save_file = GameBase::get_pref_path() + SAVE_FILE;
 	ofstream state(save_file, ios::binary | ios::trunc);
 
-	state.write(SAVE_FILE_TAG, 8);
-	state.write(reinterpret_cast<char *>(&_state.curr_color), sizeof(int));
-	state.write(reinterpret_cast<char *>(&_state.curr_x), sizeof(int));
-	state.write(reinterpret_cast<char *>(&_state.curr_y), sizeof(int));
+	data_file_helper::write(state, SAVE_FILE_TAG);
+	data_file_helper::write(state, _state.curr_color);
+	data_file_helper::write(state, _state.curr_x);
+	data_file_helper::write(state, _state.curr_y);
+	data_file_helper::write(state, _state.screen_tips);
 
 	return true;
 }
 
 
-bool sdl::Game::_create_basic_objects()
+bool Game::Impl::_create_basic_objects()
 {
 	_window = make_sdl_ptr(SDL_CreateWindow(APP_NAME.c_str(), 100, 100, _config.screen_width, _config.screen_height, SDL_WINDOW_SHOWN));
 	if (_window == nullptr)
@@ -206,7 +329,7 @@ bool sdl::Game::_create_basic_objects()
 }
 
 
-bool sdl::Game::_load_resources()
+bool Game::Impl::_load_resources()
 {
 	string images_path = get_resource_path("images");
 	_character = make_sdl_ptr(IMG_LoadTexture(_renderer.get(), string(images_path + CHAR_FILE).c_str()));
@@ -228,7 +351,7 @@ bool sdl::Game::_load_resources()
 }
 
 
-bool sdl::Game::_init_char()
+bool Game::Impl::_init_char()
 {
 	int w, h;
 	SDL_QueryTexture(_character.get(), nullptr, nullptr, &w, &h);
@@ -256,7 +379,7 @@ bool sdl::Game::_init_char()
 }
 
 
-void sdl::Game::_check_events()
+void Game::Impl::_check_events()
 {
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
@@ -266,7 +389,7 @@ void sdl::Game::_check_events()
 }
 
 
-void sdl::Game::_check_inputs()
+void Game::Impl::_check_inputs()
 {
 	_check_keyboard_inputs();
 	_check_mouse_inputs();
@@ -274,7 +397,7 @@ void sdl::Game::_check_inputs()
 }
 
 
-void sdl::Game::_check_keyboard_inputs()
+void Game::Impl::_check_keyboard_inputs()
 {
 	auto state = SDL_GetKeyboardState(nullptr);
 	if (state[SDL_SCANCODE_ESCAPE]) _state.quit = true;
@@ -284,57 +407,46 @@ void sdl::Game::_check_keyboard_inputs()
 	if (state[SDL_SCANCODE_KP_7]) _state.curr_color = 2;
 	if (state[SDL_SCANCODE_KP_8]) _state.curr_color = 3;
 
-	if (state[SDL_SCANCODE_A])
-	{
-		_state.curr_x -= 10;
-		if (_state.curr_x < 0) _state.curr_x = 0;
-	}
-	if (state[SDL_SCANCODE_D])
-	{
-		_state.curr_x += 10;
-		if (_state.curr_x > _config.screen_width) _state.curr_x = _config.screen_width;
-	}
-	if (state[SDL_SCANCODE_W])
-	{
-		_state.curr_y -= 10;
-		if (_state.curr_y < 0) _state.curr_y = 0;
-	}
-	if (state[SDL_SCANCODE_S])
-	{
-		_state.curr_y += 10;
-		if (_state.curr_y > _config.screen_height) _state.curr_y = _config.screen_height;
-	}
+	if (state[SDL_SCANCODE_A]) _state.curr_x -= 10;
+	if (state[SDL_SCANCODE_D]) _state.curr_x += 10;
+	if (state[SDL_SCANCODE_W]) _state.curr_y -= 10;
+	if (state[SDL_SCANCODE_S]) _state.curr_y += 10;
+
+	if (_state.curr_x < 0) _state.curr_x = 0;
+	else if (_state.curr_x > _config.screen_width) _state.curr_x = _config.screen_width;
+
+	if (_state.curr_y < 0) _state.curr_y = 0;
+	else if (_state.curr_y > _config.screen_height) _state.curr_y = _config.screen_height;
 }
 
 
-void sdl::Game::_check_mouse_inputs()
+void Game::Impl::_check_mouse_inputs()
 {}
 
 
-void sdl::Game::_check_joystick_inputs()
+void Game::Impl::_check_joystick_inputs()
 {}
 
 
-void sdl::Game::_render()
+void Game::Impl::_render()
 {
 	SDL_RenderClear(_renderer.get());
 
 	// tips
-	string tips = "A, D, S, W: move;  NumPad 4, 5, 7, 8: change color;  ESC: quit";
-	auto text_tips = render_text(_renderer, tips, _font, FONT_COLOR);
+	auto text_tips = render_text(_renderer, _config.screen_tips, _font, FONT_COLOR);
 	render_texture(_renderer, text_tips, _config.screen_width / 2, _config.screen_height / 2);
 
 	// frame rate
 	static auto last_time = chrono::steady_clock::now();
 	static auto last_frame_count = _state.frame_count;
-	static char frame_rate_buf[100] = "0";
+	static char frame_rate_buf[10] = "0";
 	auto curr_time = chrono::steady_clock::now();
 	if (last_time + chrono::seconds(1) <= curr_time)
 	{
 		auto curr_frame_count = _state.frame_count;
 		chrono::duration<double> elapsed_seconds = curr_time - last_time;
 		auto frame_rate = (curr_frame_count - last_frame_count) / elapsed_seconds.count();
-		sprintf(frame_rate_buf, "%.2f", frame_rate);
+		snprintf(frame_rate_buf, sizeof(frame_rate_buf), "%.2f", frame_rate);
 
 		last_time = curr_time;
 		last_frame_count = curr_frame_count;
@@ -347,30 +459,4 @@ void sdl::Game::_render()
 		render_texture(_renderer, _character, &_char_clips[_state.curr_color], _state.curr_x, _state.curr_y);
 
 	SDL_RenderPresent(_renderer.get());
-}
-
-
-void sdl::Game::_render_tiled_background(const SDL_RendererPtr & ren, const SDL_TexturePtr & tex, int w, int h)
-{
-	SDL_Rect dst;
-	if (w <= 0 || h <= 0)
-	{
-		int _w, _h;
-		SDL_QueryTexture(tex.get(), nullptr, nullptr, &_w, &_h);
-		if (w <= 0) w = _w;
-		if (h <= 0) h = _h;
-	}
-
-	dst.w = w;
-	dst.h = h;
-
-	for (int x = 0; x < _config.screen_width; x += w)
-	{
-		for (int y = 0; y < _config.screen_height; y += h)
-		{
-			dst.x = x;
-			dst.y = y;
-			SDL_RenderCopy(ren.get(), tex.get(), nullptr, &dst);
-		}
-	}
 }
