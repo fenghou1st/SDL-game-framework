@@ -13,17 +13,11 @@
     <Filter Include="[libs]\simple_ini">
       <UniqueIdentifier>{8a5ce474-a448-4f17-8436-6b21729116df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="[libs]\game\sdl">
+      <UniqueIdentifier>{dee8ec77-1048-47ed-b6aa-675c7e1c403d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sdl_ptr.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="sdl_log.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="sdl_utils.h">
-      <Filter>main</Filter>
-    </ClInclude>
     <ClInclude Include="game.h">
       <Filter>main</Filter>
     </ClInclude>
@@ -36,7 +30,25 @@
     <ClInclude Include="[libs]\simple_ini\SimpleIni.h">
       <Filter>[libs]\simple_ini</Filter>
     </ClInclude>
-    <ClInclude Include="[libs]\game\data_file_helper.h">
+    <ClInclude Include="[libs]\game\sdl\sdl_log.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="[libs]\game\sdl\sdl_ptr.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="[libs]\game\sdl\sdl_utils.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="[libs]\game\data.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="state.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="[libs]\game\data_path.h">
       <Filter>[libs]\game</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +62,16 @@
     <ClCompile Include="game_base.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="[libs]\game\data_file_helper.cpp">
+    <ClCompile Include="config.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="[libs]\game\data.cpp">
+      <Filter>[libs]\game</Filter>
+    </ClCompile>
+    <ClCompile Include="state.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="[libs]\game\data_path.cpp">
       <Filter>[libs]\game</Filter>
     </ClCompile>
   </ItemGroup>

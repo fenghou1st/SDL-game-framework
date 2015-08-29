@@ -1,31 +1,22 @@
 #include "game.h"
 
-#ifndef _WIN32
-#include <unistd.h>
-#endif
-#include <fstream>
 #include <string>
 #include <chrono>
 #include <thread>
 #include <vector>
 
-#include <boost/filesystem.hpp>
-
 #include <SDL.h>
 
-#define SI_SUPPORT_IOSTREAMS
-#include "simple_ini/SimpleIni.h"
+#include "game/sdl/sdl_log.h"
+#include "game/sdl/sdl_utils.h"
+#include "game/sdl/sdl_ptr.h"
 
-#include "game/data_file_helper.h"
-
-#include "sdl_log.h"
-#include "sdl_utils.h"
-#include "sdl_ptr.h"
 #include "game_base.h"
+#include "config.h"
+#include "state.h"
 
 using namespace std;
 using namespace fenghou;
-using namespace fenghou::game;
 using namespace sdl;
 
 // Implementer Interface ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,30 +24,6 @@ using namespace sdl;
 namespace sdl
 {
 	// Classes /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	class Config
-	{
-	public:
-		int screen_width;
-		int screen_height;
-		int frame_rate;
-		string screen_tips;
-	};
-
-
-	class State
-	{
-	public:
-		State() : quit(false), frame_count(0) {}
-
-		bool quit;
-		uint64_t frame_count;
-		int_fast8_t curr_color;
-		int_fast16_t curr_x;
-		int_fast16_t curr_y;
-		string screen_tips;
-	};
-
 
 	class Game::Impl : public GameBase
 	{
@@ -69,10 +36,7 @@ namespace sdl
 
 	private:
 		bool _load_config();
-		bool _save_config();
 		bool _load_state();
-		bool _load_default_state();
-		bool _save_state();
 		bool _create_basic_objects();
 		bool _load_resources();
 		bool _init_char();
@@ -84,7 +48,6 @@ namespace sdl
 		void _render();
 
 		bool _ok;
-		CSimpleIniA _ini;
 		Config _config;
 		State _state;
 		SDL_WindowPtr _window;
@@ -138,8 +101,8 @@ namespace
 	const string ORG_NAME = "Kazesoft";
 	const string APP_NAME = "My Game";
 	const string INI_FILE = "game.ini";
-	const string SAVE_FILE = "save.dat";
-	const char SAVE_FILE_TAG[8] = { 'S', 'A', 'V', '.' , '0' , '0' , '0' , '1' };
+	const string SAVE_BIN_FILE = "save.dat";
+	const string SAVE_TXT_FILE = "save.txt";
 	const string CHAR_FILE = "character.png";
 	const string FONT_FILE = "msyh.ttc";
 	const int TILE_SIZE = 64;
@@ -164,10 +127,11 @@ bool Game::is_ok() const { return impl->is_ok(); }
 
 bool Game::run() { return impl->run(); }
 
+
 //// Game::Impl ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Game::Impl::Impl()
-	: GameBase(ORG_NAME, APP_NAME), _ok(false), _ini(true),
+	: GameBase(ORG_NAME, APP_NAME), _ok(false),
 	_window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer),
 	_font(nullptr, TTF_CloseFont), _character(nullptr, SDL_DestroyTexture)
 {
@@ -188,10 +152,7 @@ Game::Impl::Impl()
 
 
 Game::Impl::~Impl()
-{
-	_save_state();
-	_save_config();
-}
+{}
 
 
 bool Game::Impl::run()
@@ -228,84 +189,16 @@ bool Game::Impl::run()
 
 bool Game::Impl::_load_config()
 {
-	string ini_file = GameBase::get_pref_path() + INI_FILE;
-	if (!boost::filesystem::exists(ini_file)) _ini.SaveFile(ini_file.c_str());
-	SI_Error rc = _ini.LoadFile(ini_file.c_str());
-	if (rc < 0) return false;
-
-	_config.screen_width = _ini.GetLongValue("System", "Screen Width", 1600);
-	_config.screen_height = _ini.GetLongValue("System", "Screen Height", 900);
-	_config.frame_rate = _ini.GetLongValue("System", "Frame Rate", 60);
-	_config.screen_tips = _ini.GetValue("System", "Screen Tips");
-
-	return true;
-}
-
-
-bool Game::Impl::_save_config()
-{
-	string ini_file = GameBase::get_pref_path() + INI_FILE;
-
-	_ini.SetLongValue("System", "Screen Width", _config.screen_width);
-	_ini.SetLongValue("System", "Screen Height", _config.screen_height);
-	_ini.SetLongValue("System", "Frame Rate", _config.frame_rate);
-	_ini.SetValue("System", "Screen Tips", _config.screen_tips.c_str());
-
-	auto rc = _ini.SaveFile(ini_file.c_str());
-	return rc >= 0;
+	_config.set(GameBase::get_pref_path() + DIR_PREF_CFG + PATH_SEP + INI_FILE);
+	return _config.load();
 }
 
 
 bool Game::Impl::_load_state()
 {
-	string save_file = GameBase::get_pref_path() + SAVE_FILE;
-	
-	if (!boost::filesystem::exists(save_file) || boost::filesystem::file_size(save_file) <= 0)
-		return _load_default_state();
-
-	ifstream state(save_file, ios::binary);
-
-	char file_tag[sizeof(SAVE_FILE_TAG)];
-	data_file_helper::read(state, file_tag);
-	if (memcmp(SAVE_FILE_TAG, file_tag, 8) != 0)
-	{
-		log::error("Incompatible save file");
-		return _load_default_state();
-	}
-
-	data_file_helper::read(state, _state.curr_color);
-	data_file_helper::read(state, _state.curr_x);
-	data_file_helper::read(state, _state.curr_y);
-	data_file_helper::read(state, _state.screen_tips);
-
-	return true;
-}
-
-
-// TODO: load data from platform independent format, such as json
-bool Game::Impl::_load_default_state()
-{
-	_state.curr_color = -1;
-	_state.curr_x = _config.screen_width / 2;
-	_state.curr_y = _config.screen_height / 2;
-	_state.screen_tips = "A, D, S, W: move;  NumPad 4, 5, 7, 8: change color;  ESC: quit";
-
-	return true;
-}
-
-
-bool Game::Impl::_save_state()
-{
-	string save_file = GameBase::get_pref_path() + SAVE_FILE;
-	ofstream state(save_file, ios::binary | ios::trunc);
-
-	data_file_helper::write(state, SAVE_FILE_TAG);
-	data_file_helper::write(state, _state.curr_color);
-	data_file_helper::write(state, _state.curr_x);
-	data_file_helper::write(state, _state.curr_y);
-	data_file_helper::write(state, _state.screen_tips);
-
-	return true;
+	_state.set(GameBase::get_pref_path() + DIR_PREF_SAVE + PATH_SEP + SAVE_BIN_FILE,
+		GameBase::get_data_path() + "defaults" + PATH_SEP + SAVE_TXT_FILE);
+	return _state.load();
 }
 
 
@@ -331,16 +224,16 @@ bool Game::Impl::_create_basic_objects()
 
 bool Game::Impl::_load_resources()
 {
-	string images_path = get_resource_path("images");
-	_character = make_sdl_ptr(IMG_LoadTexture(_renderer.get(), string(images_path + CHAR_FILE).c_str()));
+	auto char_path = GameBase::get_data_path() + "images" + PATH_SEP + CHAR_FILE;
+	_character = make_sdl_ptr(IMG_LoadTexture(_renderer.get(), char_path.c_str()));
 	if (_character == nullptr)
 	{
 		log::error("IMG_LoadTexture");
 		return false;
 	}
 
-	string fonts_path = get_resource_path("fonts");
-	_font = make_sdl_ptr(TTF_OpenFont((fonts_path + FONT_FILE).c_str(), FONT_SIZE));
+	auto font_path = GameBase::get_data_path() + "fonts" + PATH_SEP + FONT_FILE;
+	_font = make_sdl_ptr(TTF_OpenFont(font_path.c_str(), FONT_SIZE));
 	if (_font == nullptr)
 	{
 		log::error("TTF_OpenFont");
@@ -433,7 +326,7 @@ void Game::Impl::_render()
 	SDL_RenderClear(_renderer.get());
 
 	// tips
-	auto text_tips = render_text(_renderer, _config.screen_tips, _font, FONT_COLOR);
+	auto text_tips = render_text(_renderer, _state.screen_tips, _font, FONT_COLOR);
 	render_texture(_renderer, text_tips, _config.screen_width / 2, _config.screen_height / 2);
 
 	// frame rate

@@ -26,49 +26,6 @@ namespace sdl
 	};
 
 
-	/*
-	* Get the resource path for resources located in res/subDir
-	* It's assumed the project directory is structured like:
-	* bin/
-	*  the executable
-	* res/
-	*  Lesson1/
-	*  Lesson2/
-	*
-	* Paths returned will be Lessons/res/subDir
-	*/
-	std::string get_resource_path(const std::string & subDir = "")
-	{
-		static std::string baseRes;
-
-#ifdef _WIN32
-		const char PATH_SEP = '\\';
-#else
-		const char PATH_SEP = '/';
-#endif
-
-		if (baseRes.empty())
-		{
-			char *basePath = SDL_GetBasePath();
-			if (basePath)
-			{
-				baseRes = basePath;
-				SDL_free(basePath);
-			}
-			else
-			{
-				log::error("failed to get resource path");
-				return "";
-			}
-
-			size_t pos = baseRes.rfind("bin");
-			baseRes = baseRes.substr(0, pos) + "res" + PATH_SEP;
-		}
-
-		return subDir.empty() ? baseRes : baseRes + subDir + PATH_SEP;
-	}
-
-
 	/**
 	* Draw an SDL_Texture to an SDL_Renderer at position x, y, preserving the texture's width and height
 	* @param x  The x coordinate to draw to

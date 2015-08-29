@@ -3,9 +3,9 @@
 #include <stdexcept>
 
 #include "game/common.h"
+#include "game/sdl/sdl_log.h"
 
 #include "game.h"
-#include "sdl_log.h"
 
 using namespace std;
 using namespace sdl;
