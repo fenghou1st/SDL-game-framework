@@ -69,23 +69,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include;C:\Libraries\yaml-cpp\include;.\[libs]\;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Debug;C:\Libraries\yaml-cpp\lib\x86\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\cegui\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Debug\;C:\Libraries\cegui\lib\x86\;C:\Libraries\yaml-cpp\lib\x86\Debug\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include;.\[libs]\;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Release;C:\Libraries\yaml-cpp\lib\x86\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\cegui\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Release\;C:\Libraries\cegui\lib\x86\;C:\Libraries\yaml-cpp\lib\x86\Release\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include;C:\Libraries\yaml-cpp\include;.\[libs]\;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Debug;C:\Libraries\yaml-cpp\lib\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\cegui\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Debug\;C:\Libraries\cegui\lib\x64\;C:\Libraries\yaml-cpp\lib\x64\Debug\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include;.\[libs]\;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Release;C:\Libraries\yaml-cpp\lib\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\cegui\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Release\;C:\Libraries\cegui\lib\x64\;C:\Libraries\yaml-cpp\lib\x64\Release\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -98,7 +98,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;CEGUIBase-0.lib;CEGUIOpenGLRenderer-0.lib;CEGUICoreWindowRendererSet.lib;CEGUIExpatParser.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,7 +110,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;CEGUIBase-0.lib;CEGUIOpenGLRenderer-0.lib;CEGUICoreWindowRendererSet.lib;CEGUIExpatParser.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +128,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;CEGUIBase-0.lib;CEGUIOpenGLRenderer-0.lib;CEGUICoreWindowRendererSet.lib;CEGUIExpatParser.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,11 +144,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;CEGUIBase-0.lib;CEGUIOpenGLRenderer-0.lib;CEGUICoreWindowRendererSet.lib;CEGUIExpatParser.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cegui.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_base.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="[libs]\simple_ini\SimpleIni.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cegui.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_base.cpp" />

@@ -204,7 +204,8 @@ bool Game::Impl::_load_state()
 
 bool Game::Impl::_create_basic_objects()
 {
-	_window = make_sdl_ptr(SDL_CreateWindow(APP_NAME.c_str(), 100, 100, _config.screen_width, _config.screen_height, SDL_WINDOW_SHOWN));
+	_window = make_sdl_ptr(SDL_CreateWindow(APP_NAME.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		_config.screen_width, _config.screen_height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL));
 	if (_window == nullptr)
 	{
 		log::error("SDL_CreateWindow");

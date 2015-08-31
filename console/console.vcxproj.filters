@@ -16,6 +16,9 @@
     <Filter Include="[libs]\game\sdl">
       <UniqueIdentifier>{dee8ec77-1048-47ed-b6aa-675c7e1c403d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{279f5f8c-ba4c-4d8d-834d-7adced550077}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -51,6 +54,9 @@
     <ClInclude Include="[libs]\game\data_path.h">
       <Filter>[libs]\game</Filter>
     </ClInclude>
+    <ClInclude Include="cegui.h">
+      <Filter>gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -73,6 +79,9 @@
     </ClCompile>
     <ClCompile Include="[libs]\game\data_path.cpp">
       <Filter>[libs]\game</Filter>
+    </ClCompile>
+    <ClCompile Include="cegui.cpp">
+      <Filter>gui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
