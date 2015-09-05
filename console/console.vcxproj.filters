@@ -54,7 +54,7 @@
     <ClInclude Include="[libs]\game\data_path.h">
       <Filter>[libs]\game</Filter>
     </ClInclude>
-    <ClInclude Include="cegui.h">
+    <ClInclude Include="gui\cegui.h">
       <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,7 +80,7 @@
     <ClCompile Include="[libs]\game\data_path.cpp">
       <Filter>[libs]\game</Filter>
     </ClCompile>
-    <ClCompile Include="cegui.cpp">
+    <ClCompile Include="gui\cegui.cpp">
       <Filter>gui</Filter>
     </ClCompile>
   </ItemGroup>

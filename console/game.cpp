@@ -11,6 +11,8 @@
 #include "game/sdl/sdl_utils.h"
 #include "game/sdl/sdl_ptr.h"
 
+#include "gui/cegui.h"
+
 #include "game_base.h"
 #include "config.h"
 #include "state.h"
@@ -45,7 +47,8 @@ namespace sdl
 		void _check_keyboard_inputs();
 		void _check_mouse_inputs();
 		void _check_joystick_inputs();
-		void _render();
+		void _update_state();
+		void _render(float time_elapsed);
 
 		bool _ok;
 		Config _config;
@@ -54,6 +57,8 @@ namespace sdl
 		SDL_RendererPtr _renderer;
 		SDL_FontPtr _font;
 		SDL_TexturePtr _character;
+		SDL_GLContext _context;
+		CEGUI::OpenGL3Renderer * _gl_renderer;
 		vector<SDL_Rect> _char_clips;
 	};
 
@@ -152,7 +157,13 @@ Game::Impl::Impl()
 
 
 Game::Impl::~Impl()
-{}
+{
+	CEGUI::System::destroy();
+	CEGUI::OpenGL3Renderer::destroy(*_gl_renderer);
+	_gl_renderer = nullptr;
+
+	if (_context) SDL_GL_DeleteContext(_context);
+}
 
 
 bool Game::Impl::run()
@@ -161,19 +172,26 @@ bool Game::Impl::run()
 
 	uint64_t nano_seconds_per_frame;
 	chrono::nanoseconds duration_per_frame;
-	time_point_nano frame_end;
+	time_point_nano frame_begin, frame_end;
+
+	frame_begin = chrono::steady_clock::now();
 	if (_config.frame_rate > 0)
 	{
 		nano_seconds_per_frame = 1000000000 / _config.frame_rate;
 		duration_per_frame = chrono::nanoseconds(nano_seconds_per_frame);
-		frame_end = chrono::steady_clock::now() + duration_per_frame;
+		frame_end = frame_begin + duration_per_frame;
 	}
 
 	while (!_state.quit)
 	{
+		time_point_nano curr_begin = chrono::steady_clock::now();
+		chrono::duration<float, std::milli> time_elapsed = curr_begin - frame_begin;
+		frame_begin = curr_begin;
+
 		_check_events();
 		_check_inputs();
-		_render();
+		_update_state();
+		_render(time_elapsed.count());
 
 		++_state.frame_count;
 		if (_config.frame_rate > 0)
@@ -218,6 +236,27 @@ bool Game::Impl::_create_basic_objects()
 		log::error("SDL_CreateRenderer");
 		return false;
 	}
+
+	SDL_ShowCursor(0);
+
+	_context = SDL_GL_CreateContext(_window.get());
+	if (_context == nullptr)
+	{
+		log::error("SDL_GL_CreateContext");
+		return false;
+	}
+
+	//
+	cegui::initCEGUI(GameBase::get_data_path(), GameBase::get_pref_path() + DIR_PREF_LOG + PATH_SEP,
+		_config.screen_width, _config.screen_height);
+
+	CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Sizef(_config.screen_width, _config.screen_height));
+
+	cegui::initWindows();
+
+	glClearColor(0, 0, 0, 255);
+
+	_gl_renderer = static_cast<CEGUI::OpenGL3Renderer *>(CEGUI::System::getSingleton().getRenderer());
 
 	return true;
 }
@@ -278,7 +317,48 @@ void Game::Impl::_check_events()
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
 	{
-		if (e.type == SDL_QUIT) _state.quit = true;
+		switch (e.type)
+		{
+		case SDL_QUIT:
+			_state.quit = true;
+			break;
+		case SDL_MOUSEMOTION:
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectMousePosition(static_cast<float>(e.motion.x), static_cast<float>(e.motion.y));
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectMouseButtonDown(cegui::SDLtoCEGUIMouseButton(e.button.button));
+			break;
+		case SDL_MOUSEBUTTONUP:
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectMouseButtonUp(cegui::SDLtoCEGUIMouseButton(e.button.button));
+			break;
+		case SDL_MOUSEWHEEL:
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectMouseWheelChange(static_cast<float>(e.wheel.y));
+			break;
+		case SDL_KEYDOWN:
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectKeyDown(cegui::toCEGUIKey(e.key.keysym.scancode));
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectChar(e.key.keysym.sym);
+			break;
+		case SDL_KEYUP:
+			CEGUI::System::getSingleton().getDefaultGUIContext()
+				.injectKeyUp(cegui::toCEGUIKey(e.key.keysym.scancode));
+			break;
+		case SDL_WINDOWEVENT:
+			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				CEGUI::System::getSingleton().notifyDisplaySizeChanged(
+					CEGUI::Sizef(static_cast<float>(e.window.data1), static_cast<float>(e.window.data2)));
+				glViewport(0, 0, e.window.data1, e.window.data2);
+			}
+			break;
+		default:
+			;
+		}
 	}
 }
 
@@ -322,7 +402,11 @@ void Game::Impl::_check_joystick_inputs()
 {}
 
 
-void Game::Impl::_render()
+void Game::Impl::_update_state()
+{}
+
+
+void Game::Impl::_render(float time_elapsed)
 {
 	SDL_RenderClear(_renderer.get());
 
@@ -351,6 +435,19 @@ void Game::Impl::_render()
 	// character
 	if (_state.curr_color >= 0)
 		render_texture(_renderer, _character, &_char_clips[_state.curr_color], _state.curr_x, _state.curr_y);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	CEGUI::System::getSingleton().injectTimePulse(time_elapsed);
+	CEGUI::System::getSingleton().getDefaultGUIContext().injectTimePulse(time_elapsed);
+
+	_gl_renderer->beginRendering();
+	CEGUI::System::getSingleton().renderAllGUIContexts();
+	_gl_renderer->endRendering();
+
+	SDL_GL_SwapWindow(_window.get());
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	SDL_RenderPresent(_renderer.get());
 }
