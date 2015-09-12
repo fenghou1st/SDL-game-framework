@@ -8,6 +8,7 @@ Dependencies:
   - Boost 1.59 (http://www.boost.org/)
   - SDL 2.03 (https://www.libsdl.org)
   - yaml-cpp 0.5.2 (https://github.com/jbeder/yaml-cpp)
+  - guisan 0.9.0 (https://github.com/kallisti5/guisan)
 
 
 Pitfalls:

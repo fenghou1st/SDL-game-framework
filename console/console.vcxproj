@@ -69,22 +69,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Debug\;C:\Libraries\yaml-cpp\lib\x86\Debug\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Release\;C:\Libraries\yaml-cpp\lib\x86\Release\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Debug\;C:\Libraries\yaml-cpp\lib\x64\Debug\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Release\;C:\Libraries\yaml-cpp\lib\x64\Release\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
   </PropertyGroup>
@@ -98,7 +98,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,7 +110,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +128,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,11 +144,74 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\actionevent.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\actionlistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\basiccontainer.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\cliprectangle.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\color.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\deathlistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\defaultfont.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\event.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\exception.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\focushandler.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\focuslistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\font.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\genericinput.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\glut.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\graphics.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\gui.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\image.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\imagefont.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\imageloader.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\input.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\inputevent.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\key.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\keyevent.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\keyinput.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\keylistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\listmodel.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\mouseevent.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\mouseinput.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\mouselistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\opengl.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\opengl\openglgraphics.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\opengl\openglimage.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\opengl\openglsdlimageloader.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\platform.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\rectangle.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\sdl.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\sdl\sdlgraphics.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\sdl\sdlimage.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\sdl\sdlimageloader.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\sdl\sdlinput.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\sdl\sdlpixel.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\selectionevent.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\selectionlistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widget.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgetlistener.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\button.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\checkbox.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\container.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\dropdown.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\icon.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\imagebutton.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\label.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\listbox.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\radiobutton.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\scrollarea.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\slider.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\tab.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\tabbedarea.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\textbox.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\textfield.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\window.hpp" />
+    <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\x.hpp" />
     <ClInclude Include="config.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_base.h" />
@@ -162,6 +225,54 @@
     <ClInclude Include="[libs]\simple_ini\SimpleIni.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\actionevent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\basiccontainer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\cliprectangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\color.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\defaultfont.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\event.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\exception.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\focushandler.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\font.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\genericinput.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\graphics.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\gui.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\guisan.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\image.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\imagefont.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\inputevent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\key.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\keyevent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\keyinput.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\mouseevent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\mouseinput.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\opengl\opengl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\opengl\openglgraphics.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\opengl\openglimage.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\rectangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\sdl\sdl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\sdl\sdlgraphics.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\sdl\sdlimage.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\sdl\sdlimageloader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\sdl\sdlinput.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\selectionevent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widget.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\button.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\checkbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\container.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\dropdown.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\icon.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\imagebutton.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\label.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\listbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\radiobutton.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\scrollarea.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\slider.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\tab.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\tabbedarea.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\textbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\textfield.cpp" />
+    <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\window.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_base.cpp" />

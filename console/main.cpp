@@ -2,6 +2,8 @@
 #include <cassert>
 #include <stdexcept>
 
+#include <guisan.hpp>
+
 #include "game/common.h"
 #include "game/sdl/sdl_log.h"
 
@@ -19,9 +21,26 @@ int main(int argc, char * argv [])
 		if (!game.is_ok()) throw runtime_error("Failed to initialize Game");
 		if (!game.run()) throw runtime_error("Failed to run Game");
 	}
-	catch (logic_error & e) { log::fatal(e.what()); }
-	catch (runtime_error & e) { log::fatal(e.what()); }
-	catch (...) { log::fatal("Catched unknown exception."); }
+	catch (gcn::Exception e)
+	{
+		log::fatal(e.getMessage());
+		return 1;
+	}
+	catch (logic_error & e)
+	{
+		log::fatal(e.what());
+		return 1;
+	}
+	catch (runtime_error & e)
+	{
+		log::fatal(e.what());
+		return 1;
+	}
+	catch (...)
+	{
+		log::fatal("Catched unknown exception.");
+		return 1;
+	}
 
 	return 0;
 }
