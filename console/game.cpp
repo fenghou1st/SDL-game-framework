@@ -13,6 +13,7 @@
 #include "game/sdl/sdl_utils.h"
 #include "game/sdl/sdl_ptr.h"
 
+#include "actions/actions.h"
 #include "game_base.h"
 #include "config.h"
 #include "state.h"
@@ -47,8 +48,8 @@ namespace sdl
 		void _check_keyboard_inputs();
 		void _check_mouse_inputs();
 		void _check_joystick_inputs();
-		void _update_state();
-		void _render(float time_elapsed);
+		void _update_state(float time_elapsed);
+		void _render();
 
 		bool _ok;
 		Config _config;
@@ -202,8 +203,8 @@ bool Game::Impl::run()
 
 		_check_events();
 		_check_inputs();
-		_update_state();
-		_render(time_elapsed.count());
+		_update_state(time_elapsed.count());
+		_render();
 
 		++_state.frame_count;
 		if (_config.frame_rate > 0)
@@ -384,21 +385,27 @@ void Game::Impl::_check_keyboard_inputs()
 	auto state = SDL_GetKeyboardState(nullptr);
 	if (state[SDL_SCANCODE_ESCAPE]) _state.quit = true;
 
-	if (state[SDL_SCANCODE_KP_4]) _state.curr_color = 0;
-	if (state[SDL_SCANCODE_KP_5]) _state.curr_color = 1;
-	if (state[SDL_SCANCODE_KP_7]) _state.curr_color = 2;
-	if (state[SDL_SCANCODE_KP_8]) _state.curr_color = 3;
+	//
+	if (state[SDL_SCANCODE_KP_4]) _state.self->appearance = 0;
+	if (state[SDL_SCANCODE_KP_5]) _state.self->appearance = 1;
+	if (state[SDL_SCANCODE_KP_7]) _state.self->appearance = 2;
+	if (state[SDL_SCANCODE_KP_8]) _state.self->appearance = 3;
 
-	if (state[SDL_SCANCODE_A]) _state.curr_x -= 10;
-	if (state[SDL_SCANCODE_D]) _state.curr_x += 10;
-	if (state[SDL_SCANCODE_W]) _state.curr_y -= 10;
-	if (state[SDL_SCANCODE_S]) _state.curr_y += 10;
+	//
+	double phi;
+	double power_ratio = 1;
+	const double pi = std::acos(-1);
+	if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_D]) phi = pi * 3 / 8;
+	else if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_S]) phi = pi * 5 / 8;
+	else if (state[SDL_SCANCODE_S] && state[SDL_SCANCODE_D]) phi = pi * 7 / 8;
+	else if (state[SDL_SCANCODE_D] && state[SDL_SCANCODE_W]) phi = pi * 1 / 8;
+	else if (state[SDL_SCANCODE_A]) phi = pi * 4 / 8;
+	else if (state[SDL_SCANCODE_S]) phi = pi * 6 / 8;
+	else if (state[SDL_SCANCODE_D]) phi = pi * 0 / 8;
+	else if (state[SDL_SCANCODE_W]) phi = pi * 2 / 8;
+	else power_ratio = 0;
 
-	if (_state.curr_x < 0) _state.curr_x = 0;
-	else if (_state.curr_x > _config.screen_width) _state.curr_x = _config.screen_width;
-
-	if (_state.curr_y < 0) _state.curr_y = 0;
-	else if (_state.curr_y > _config.screen_height) _state.curr_y = _config.screen_height;
+	_state.self->add_action(Move(phi, pi / 4, power_ratio));
 }
 
 
@@ -410,11 +417,29 @@ void Game::Impl::_check_joystick_inputs()
 {}
 
 
-void Game::Impl::_update_state()
-{}
+void Game::Impl::_update_state(float time_elapsed)
+{
+	for (auto & character : _state.chars)
+	{
+		for (auto & action : character.actions) action.apply(&character, &_state);
+
+		// 根据移动速度、环境情况计算阻力，减小速度
+		;
+
+		// 计算位置移动
+		;
+
+		// 根据边界修正位置
+		if (character.pos.x < 0) character.pos.x += _config.screen_width;
+		else if (character.pos.x > _config.screen_width) character.pos.x -= _config.screen_width;
+
+		if (character.pos.y < 0) character.pos.y += _config.screen_height;
+		else if (character.pos.y > _config.screen_height) character.pos.y -= _config.screen_height;
+	}
+}
 
 
-void Game::Impl::_render(float time_elapsed)
+void Game::Impl::_render()
 {
 	SDL_RenderClear(_renderer.get());
 
@@ -441,8 +466,9 @@ void Game::Impl::_render(float time_elapsed)
 	render_texture(_renderer, text_frame_rate, 0, _config.screen_height - 1, TEXTURE_ORIGIN::BOTTOM_LEFT);
 
 	// character
-	if (_state.curr_color >= 0)
-		render_texture(_renderer, _character, &_char_clips[_state.curr_color], _state.curr_x, _state.curr_y);
+	if (_state.self->appearance >= 0)
+		render_texture(_renderer, _character, &_char_clips[_state.self->appearance],
+			int(_state.self->pos.x), int(_state.self->pos.y));
 
 	//
 	_gcn_gui->logic();

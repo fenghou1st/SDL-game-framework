@@ -46,6 +46,12 @@
     <Filter Include="[libs]\guisan\include\guisan\widgets">
       <UniqueIdentifier>{cc6dcd50-58e9-4739-a49a-ec743ebefd7e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{3ffbbcbd-3eaa-4a9f-a9ad-60a693a798a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="actions">
+      <UniqueIdentifier>{30534836-f419-4b67-ad7c-91fd32e54b0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -270,6 +276,27 @@
     <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\window.hpp">
       <Filter>[libs]\guisan\include\guisan\widgets</Filter>
     </ClInclude>
+    <ClInclude Include="[libs]\game\point.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\character.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\object.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\animated_object.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="actions\action.h">
+      <Filter>actions</Filter>
+    </ClInclude>
+    <ClInclude Include="actions\move.h">
+      <Filter>actions</Filter>
+    </ClInclude>
+    <ClInclude Include="actions\actions.h">
+      <Filter>actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -436,6 +463,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\opengl\openglimage.cpp">
       <Filter>[libs]\guisan\src\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="[libs]\game\point.cpp">
+      <Filter>[libs]\game</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\character.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\object.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\animated_object.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="actions\action.cpp">
+      <Filter>actions</Filter>
+    </ClCompile>
+    <ClCompile Include="actions\move.cpp">
+      <Filter>actions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
