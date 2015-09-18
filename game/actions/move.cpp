@@ -27,4 +27,6 @@ bool Move::apply(Character * character, State * state)
 	character->vel.x += character->dex * power_ratio * sin(theta) * cos(phi);
 	character->vel.y += character->dex * power_ratio * sin(theta) * sin(phi);
 	character->vel.z += character->dex * power_ratio * cos(theta);
+
+	return true;
 }

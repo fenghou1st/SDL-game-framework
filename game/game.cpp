@@ -5,6 +5,8 @@
 #include <thread>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+
 #include <guisan.hpp>
 #include <guisan/sdl.hpp>
 #include <SDL.h>
@@ -113,11 +115,6 @@ namespace
 
 	// Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const string ORG_NAME = "Kazesoft";
-	const string APP_NAME = "My Game";
-	const string INI_FILE = "game.ini";
-	const string SAVE_BIN_FILE = "save.dat";
-	const string SAVE_TXT_FILE = "save.txt";
 	const string CHAR_FILE = "character.png";
 	const string FONT_FILE = "msyh.ttc";
 	const string FONT_IMG_FILE = "fixedfont.bmp";
@@ -220,15 +217,24 @@ bool Game::Impl::run()
 
 bool Game::Impl::_load_config()
 {
-	_config.set(GameBase::get_pref_path() + DIR_PREF_CFG + PATH_SEP + INI_FILE);
+	string ini_file = GameBase::get_pref_path() + DIR_PREF_CFG + PATH_SEP + INI_FILE;
+	string default_ini_file = GameBase::get_data_path() + "defaults" + PATH_SEP + INI_FILE;
+
+	if (!boost::filesystem::exists(ini_file)) boost::filesystem::copy_file(default_ini_file, ini_file);
+
+	_config.set(ini_file);
 	return _config.load();
 }
 
 
 bool Game::Impl::_load_state()
 {
-	_state.set(GameBase::get_pref_path() + DIR_PREF_SAVE + PATH_SEP + SAVE_BIN_FILE,
-		GameBase::get_data_path() + "defaults" + PATH_SEP + SAVE_TXT_FILE);
+	string save_file = GameBase::get_pref_path() + DIR_PREF_SAVE + PATH_SEP + SAVE_FILE;
+	string default_save_file = GameBase::get_data_path() + "defaults" + PATH_SEP + SAVE_FILE;
+
+	if (!boost::filesystem::exists(save_file)) boost::filesystem::copy_file(default_save_file, save_file);
+
+	_state.set(save_file);
 	return _state.load();
 }
 
@@ -405,7 +411,7 @@ void Game::Impl::_check_keyboard_inputs()
 	else if (state[SDL_SCANCODE_W]) phi = pi * 2 / 8;
 	else power_ratio = 0;
 
-	_state.self->add_action(Move(phi, pi / 4, power_ratio));
+	_state.self->add_action(make_shared<Move>(phi, pi / 4, power_ratio));
 }
 
 
@@ -421,7 +427,7 @@ void Game::Impl::_update_state(float time_elapsed)
 {
 	for (auto & character : _state.chars)
 	{
-		for (auto & action : character.actions) action.apply(&character, &_state);
+		for (auto & action : character.actions) action->apply(&character, &_state);
 
 		// 根据移动速度、环境情况计算阻力，减小速度
 		;

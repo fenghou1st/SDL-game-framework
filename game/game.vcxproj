@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5CB50CC8-C344-4B2A-A02E-05DB3B3CE046}</ProjectGuid>
-    <RootNamespace>console</RootNamespace>
+    <RootNamespace>game</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -69,22 +69,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;..\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Debug\;C:\Libraries\yaml-cpp\lib\x86\Debug\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;..\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x86\Release\;C:\Libraries\yaml-cpp\lib\x86\Release\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;..\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Debug\;C:\Libraries\yaml-cpp\lib\x64\Debug\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;.\[libs]\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libraries\boost\;C:\Libraries\SDL\include\;C:\Libraries\guisan\include\;C:\Libraries\yaml-cpp\include\;..\[libs]\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib\;C:\Libraries\SDL\lib\x64\Release\;C:\Libraries\yaml-cpp\lib\x64\Release\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
   </PropertyGroup>
@@ -212,6 +212,14 @@
     <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\textfield.hpp" />
     <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\window.hpp" />
     <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\x.hpp" />
+    <ClInclude Include="..\[libs]\game\common.h" />
+    <ClInclude Include="..\[libs]\game\data.h" />
+    <ClInclude Include="..\[libs]\game\data_path.h" />
+    <ClInclude Include="..\[libs]\game\point.h" />
+    <ClInclude Include="..\[libs]\game\sdl\sdl_log.h" />
+    <ClInclude Include="..\[libs]\game\sdl\sdl_ptr.h" />
+    <ClInclude Include="..\[libs]\game\sdl\sdl_utils.h" />
+    <ClInclude Include="..\[libs]\simple_ini\SimpleIni.h" />
     <ClInclude Include="actions\action.h" />
     <ClInclude Include="actions\actions.h" />
     <ClInclude Include="actions\move.h" />
@@ -222,14 +230,6 @@
     <ClInclude Include="objects\character.h" />
     <ClInclude Include="objects\object.h" />
     <ClInclude Include="state.h" />
-    <ClInclude Include="[libs]\game\common.h" />
-    <ClInclude Include="[libs]\game\data.h" />
-    <ClInclude Include="[libs]\game\data_path.h" />
-    <ClInclude Include="[libs]\game\point.h" />
-    <ClInclude Include="[libs]\game\sdl\sdl_log.h" />
-    <ClInclude Include="[libs]\game\sdl\sdl_ptr.h" />
-    <ClInclude Include="[libs]\game\sdl\sdl_utils.h" />
-    <ClInclude Include="[libs]\simple_ini\SimpleIni.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\actionevent.cpp" />
@@ -280,6 +280,9 @@
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\textbox.cpp" />
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\textfield.cpp" />
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\widgets\window.cpp" />
+    <ClCompile Include="..\[libs]\game\data.cpp" />
+    <ClCompile Include="..\[libs]\game\data_path.cpp" />
+    <ClCompile Include="..\[libs]\game\point.cpp" />
     <ClCompile Include="actions\action.cpp" />
     <ClCompile Include="actions\move.cpp" />
     <ClCompile Include="config.cpp" />
@@ -290,9 +293,6 @@
     <ClCompile Include="objects\character.cpp" />
     <ClCompile Include="objects\object.cpp" />
     <ClCompile Include="state.cpp" />
-    <ClCompile Include="[libs]\game\data.cpp" />
-    <ClCompile Include="[libs]\game\data_path.cpp" />
-    <ClCompile Include="[libs]\game\point.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

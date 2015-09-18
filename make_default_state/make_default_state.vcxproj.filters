@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="main">
+      <UniqueIdentifier>{09cfdf5a-9b18-4d48-b13f-d49f0ab29962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="[libs]">
+      <UniqueIdentifier>{5d4f229b-e9b7-4335-8c2c-c64d26dd2240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="[libs]\game">
+      <UniqueIdentifier>{52d153ad-eee9-42ec-b4ad-b89f7f1952d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="[libs]\game\sdl">
+      <UniqueIdentifier>{dee8ec77-1048-47ed-b6aa-675c7e1c403d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{3ffbbcbd-3eaa-4a9f-a9ad-60a693a798a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="actions">
+      <UniqueIdentifier>{30534836-f419-4b67-ad7c-91fd32e54b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{cf062ffb-63cd-47fa-b0dc-eb276005fe66}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\[libs]\game\sdl\sdl_log.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\sdl\sdl_ptr.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\sdl\sdl_utils.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\common.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\point.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\objects\animated_object.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\objects\character.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\objects\object.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\actions\action.h">
+      <Filter>actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\actions\actions.h">
+      <Filter>actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\actions\move.h">
+      <Filter>actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\game_base.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game\state.h">
+      <Filter>game</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\[libs]\game\point.cpp">
+      <Filter>[libs]\game</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\objects\animated_object.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\objects\character.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\objects\object.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\actions\action.cpp">
+      <Filter>actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\actions\move.cpp">
+      <Filter>actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\game_base.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\state.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

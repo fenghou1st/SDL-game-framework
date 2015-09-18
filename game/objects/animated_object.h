@@ -1,13 +1,17 @@
 //----------------------------------------------------------------------------------------------------------------------
-// Action: move
+// Animated Object
 //----------------------------------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <cassert>
 
+#include <boost/serialization/serialization.hpp>
+
 #include "game/common.h"
-#include "action.h"
+
+#include "object.h"
+
 
 namespace fenghou
 {
@@ -16,17 +20,22 @@ namespace fenghou
 
 	// Classes /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	class Move : public Action
+	class AnimatedObject : public Object
 	{
 	public:
-		Move(double phi, double theta, double power_ratio) : phi(phi), theta(theta), power_ratio(power_ratio) {}
-		virtual ~Move() {}
+		virtual ~AnimatedObject() {}
 
-		virtual bool apply(Character * character, State * state);
+		int_fast32_t ani;
+		double ani_progress;
 
-		double phi; // radian
-		double theta; // radian
-		double power_ratio; // [0, 1]
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & boost::serialization::base_object<Object>(*this);
+			ar & ani;
+			ar & ani_progress;
+		}
 	};
 
 	// Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////

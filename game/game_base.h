@@ -56,4 +56,9 @@ namespace sdl
 	const string DIR_PREF_CFG = "configs";
 	const string DIR_PREF_LOG = "logs";
 	const string DIR_PREF_SAVE = "saves";
+
+	const string ORG_NAME = "Kazesoft";
+	const string APP_NAME = "My Game";
+	const string INI_FILE = "game.ini";
+	const string SAVE_FILE = "save.dat";
 }

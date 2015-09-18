@@ -1,23 +1,44 @@
 //----------------------------------------------------------------------------------------------------------------------
-// Point
+// Object
 //----------------------------------------------------------------------------------------------------------------------
 
 #pragma once
 
+#include <cassert>
 
-namespace fenghou { namespace game
+#include <boost/serialization/serialization.hpp>
+
+#include "game/common.h"
+
+
+namespace fenghou
 {
+	using namespace std;
+	using namespace fenghou::game;
+
 	// Classes /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	class Point
+	class Object
 	{
 	public:
+		virtual ~Object() {}
 
-		double x;
-		double y;
-		double z;
+		int_fast32_t appearance;
+		double hp;
+		Point pos;
+		Point vel;
+
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & appearance;
+			ar & hp;
+			ar & pos;
+			ar & vel;
+		}
 	};
 
 	// Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////
-}}
+}

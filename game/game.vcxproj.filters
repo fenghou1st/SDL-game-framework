@@ -60,32 +60,11 @@
     <ClInclude Include="game_base.h">
       <Filter>main</Filter>
     </ClInclude>
-    <ClInclude Include="[libs]\game\common.h">
-      <Filter>[libs]\game</Filter>
-    </ClInclude>
-    <ClInclude Include="[libs]\simple_ini\SimpleIni.h">
-      <Filter>[libs]\simple_ini</Filter>
-    </ClInclude>
-    <ClInclude Include="[libs]\game\sdl\sdl_log.h">
-      <Filter>[libs]\game\sdl</Filter>
-    </ClInclude>
-    <ClInclude Include="[libs]\game\sdl\sdl_ptr.h">
-      <Filter>[libs]\game\sdl</Filter>
-    </ClInclude>
-    <ClInclude Include="[libs]\game\sdl\sdl_utils.h">
-      <Filter>[libs]\game\sdl</Filter>
-    </ClInclude>
     <ClInclude Include="config.h">
       <Filter>main</Filter>
     </ClInclude>
-    <ClInclude Include="[libs]\game\data.h">
-      <Filter>[libs]\game</Filter>
-    </ClInclude>
     <ClInclude Include="state.h">
       <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="[libs]\game\data_path.h">
-      <Filter>[libs]\game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\actionevent.hpp">
       <Filter>[libs]\guisan\include\guisan</Filter>
@@ -276,9 +255,6 @@
     <ClInclude Include="..\..\..\..\..\Libraries\guisan\include\guisan\widgets\window.hpp">
       <Filter>[libs]\guisan\include\guisan\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="[libs]\game\point.h">
-      <Filter>[libs]\game</Filter>
-    </ClInclude>
     <ClInclude Include="objects\character.h">
       <Filter>objects</Filter>
     </ClInclude>
@@ -297,6 +273,30 @@
     <ClInclude Include="actions\actions.h">
       <Filter>actions</Filter>
     </ClInclude>
+    <ClInclude Include="..\[libs]\game\sdl\sdl_log.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\sdl\sdl_ptr.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\sdl\sdl_utils.h">
+      <Filter>[libs]\game\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\common.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\data.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\data_path.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\game\point.h">
+      <Filter>[libs]\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[libs]\simple_ini\SimpleIni.h">
+      <Filter>[libs]\simple_ini</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -311,14 +311,8 @@
     <ClCompile Include="config.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="[libs]\game\data.cpp">
-      <Filter>[libs]\game</Filter>
-    </ClCompile>
     <ClCompile Include="state.cpp">
       <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="[libs]\game\data_path.cpp">
-      <Filter>[libs]\game</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\actionevent.cpp">
       <Filter>[libs]\guisan\src</Filter>
@@ -464,9 +458,6 @@
     <ClCompile Include="..\..\..\..\..\Libraries\guisan\src\opengl\openglimage.cpp">
       <Filter>[libs]\guisan\src\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="[libs]\game\point.cpp">
-      <Filter>[libs]\game</Filter>
-    </ClCompile>
     <ClCompile Include="objects\character.cpp">
       <Filter>objects</Filter>
     </ClCompile>
@@ -481,6 +472,15 @@
     </ClCompile>
     <ClCompile Include="actions\move.cpp">
       <Filter>actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[libs]\game\data.cpp">
+      <Filter>[libs]\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[libs]\game\data_path.cpp">
+      <Filter>[libs]\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[libs]\game\point.cpp">
+      <Filter>[libs]\game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
