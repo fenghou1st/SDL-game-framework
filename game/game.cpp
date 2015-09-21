@@ -166,6 +166,8 @@ Game::Impl::Impl()
 
 Game::Impl::~Impl()
 {
+	_state.save();
+
 	delete _gcn_label;
 	delete _gcn_font;
 	delete _gcn_top;
@@ -195,7 +197,7 @@ bool Game::Impl::run()
 	while (!_state.quit)
 	{
 		time_point_nano curr_begin = chrono::steady_clock::now();
-		chrono::duration<float, std::milli> time_elapsed = curr_begin - frame_begin;
+		chrono::duration<float> time_elapsed = curr_begin - frame_begin;
 		frame_begin = curr_begin;
 
 		_check_events();
@@ -401,17 +403,17 @@ void Game::Impl::_check_keyboard_inputs()
 	double phi;
 	double power_ratio = 1;
 	const double pi = std::acos(-1);
-	if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_D]) phi = pi * 3 / 8;
-	else if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_S]) phi = pi * 5 / 8;
-	else if (state[SDL_SCANCODE_S] && state[SDL_SCANCODE_D]) phi = pi * 7 / 8;
-	else if (state[SDL_SCANCODE_D] && state[SDL_SCANCODE_W]) phi = pi * 1 / 8;
-	else if (state[SDL_SCANCODE_A]) phi = pi * 4 / 8;
-	else if (state[SDL_SCANCODE_S]) phi = pi * 6 / 8;
-	else if (state[SDL_SCANCODE_D]) phi = pi * 0 / 8;
-	else if (state[SDL_SCANCODE_W]) phi = pi * 2 / 8;
+	if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_W]) phi = pi * 3 / 4;
+	else if (state[SDL_SCANCODE_A] && state[SDL_SCANCODE_S]) phi = pi * 5 / 4;
+	else if (state[SDL_SCANCODE_S] && state[SDL_SCANCODE_D]) phi = pi * 7 / 4;
+	else if (state[SDL_SCANCODE_D] && state[SDL_SCANCODE_W]) phi = pi * 1 / 4;
+	else if (state[SDL_SCANCODE_A]) phi = pi * 4 / 4;
+	else if (state[SDL_SCANCODE_S]) phi = pi * 6 / 4;
+	else if (state[SDL_SCANCODE_D]) phi = pi * 0 / 4;
+	else if (state[SDL_SCANCODE_W]) phi = pi * 2 / 4;
 	else power_ratio = 0;
 
-	_state.self->add_action(make_shared<Move>(phi, pi / 4, power_ratio));
+	if (power_ratio > 0) _state.self->add_action(new Move(phi, pi / 2, power_ratio));
 }
 
 
@@ -427,20 +429,28 @@ void Game::Impl::_update_state(float time_elapsed)
 {
 	for (auto & character : _state.chars)
 	{
-		for (auto & action : character.actions) action->apply(&character, &_state);
+		for (auto & action : character->actions) action->apply(character, &_state);
+		character->clear_actions();
+
+		// 更新人物速度、位置 //////////////////////////////////////////////////////////////////////////////////////////
 
 		// 根据移动速度、环境情况计算阻力，减小速度
-		;
+		auto attenuation = 1 - 0.3f * time_elapsed;
+		character->vel.x *= attenuation;
+		character->vel.y *= attenuation;
+		character->vel.z *= attenuation;
 
 		// 计算位置移动
-		;
+		character->pos.x += character->vel.x * time_elapsed;
+		character->pos.y += character->vel.y * time_elapsed;
+		character->pos.z += character->vel.z * time_elapsed;
 
 		// 根据边界修正位置
-		if (character.pos.x < 0) character.pos.x += _config.screen_width;
-		else if (character.pos.x > _config.screen_width) character.pos.x -= _config.screen_width;
+		if (character->pos.x < 0) character->pos.x += _config.screen_width;
+		else if (character->pos.x > _config.screen_width) character->pos.x -= _config.screen_width;
 
-		if (character.pos.y < 0) character.pos.y += _config.screen_height;
-		else if (character.pos.y > _config.screen_height) character.pos.y -= _config.screen_height;
+		if (character->pos.y < 0) character->pos.y += _config.screen_height;
+		else if (character->pos.y > _config.screen_height) character->pos.y -= _config.screen_height;
 	}
 }
 

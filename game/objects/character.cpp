@@ -21,10 +21,23 @@ namespace
 
 // Functions ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Character::~Character()
+{
+	clear_actions();
+}
+
+
 // TODO: 需要检查当前动作是否可以和现有的动作并存，若不能并存则不能加入
-bool Character::add_action(const std::shared_ptr<Action> & action)
+bool Character::add_action(Action * action)
 {
 	actions.push_back(action);
 
 	return true;
+}
+
+
+void Character::clear_actions()
+{
+	for (auto action : actions) delete action;
+	actions.clear();
 }

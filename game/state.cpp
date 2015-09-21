@@ -40,7 +40,8 @@ State::State(const string & save_file)
 
 State::~State()
 {
-	save();
+	for (auto character : chars) delete character;
+	chars.clear();
 }
 
 
@@ -81,5 +82,5 @@ bool State::save()
 
 void State::post_load()
 {
-	self = &chars[0];
+	self = chars[0];
 }

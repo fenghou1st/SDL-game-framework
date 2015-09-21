@@ -22,6 +22,7 @@ namespace fenghou
 	class Move : public Action
 	{
 	public:
+		Move() {}
 		Move(double phi, double theta, double power_ratio) : phi(phi), theta(theta), power_ratio(power_ratio) {}
 		virtual ~Move() {}
 

@@ -27,6 +27,8 @@ namespace fenghou
 	public:
 		State();
 		State(const string & save_file);
+		State(const State &) = delete;
+		State & operator=(const State &) = delete;
 		~State();
 
 		void set(const string & save_file);
@@ -37,7 +39,7 @@ namespace fenghou
 		uint_fast64_t frame_count;
 		Character * self;
 
-		vector<Character> chars;
+		vector<Character *> chars;
 		string screen_tips;
 
 	private:

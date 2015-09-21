@@ -10,12 +10,13 @@
 #include <vector>
 
 #include <boost/serialization/serialization.hpp>
-#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/assume_abstract.hpp>
 
 #include "game/common.h"
 
 #include "animated_object.h"
-#include "../actions/action.h"
+#include "../actions/actions.h"
 
 namespace fenghou
 {
@@ -27,26 +28,32 @@ namespace fenghou
 	class Character : public AnimatedObject
 	{
 	public:
-		virtual ~Character() {}
+		Character() {}
+		Character(const Character &) = delete;
+		Character & operator=(const Character &) = delete;
+		virtual ~Character();
 
-		bool add_action(const std::shared_ptr<Action> & action);
+		bool add_action(Action * action);
+		void clear_actions();
 
 		string name;
 
 		int_fast32_t exp;
-		int_fast8_t lvl;
+		int_fast16_t lvl;
 		double str;
 		double dex;
 		double wiz;
 		double stamina;
 		double mana;
 
-		vector<std::shared_ptr<Action>> actions;
+		vector<Action *> actions;
 
 	private:
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version)
 		{
+			ar.register_type(static_cast<Move *>(nullptr));
+
 			ar & boost::serialization::base_object<AnimatedObject>(*this);
 			ar & name;
 			ar & exp;
