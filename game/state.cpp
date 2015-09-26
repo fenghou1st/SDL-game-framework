@@ -53,7 +53,7 @@ void State::set(const string & save_file)
 
 bool State::load()
 {
-	ifstream ifs(_save_file);
+	ifstream ifs(_save_file, ios_base::binary);
 	if (ifs.is_open())
 	{
 		archive::binary_iarchive ia(ifs);
@@ -68,7 +68,7 @@ bool State::load()
 
 bool State::save()
 {
-	ofstream ofs(_save_file);
+	ofstream ofs(_save_file, ios_base::binary);
 	if (ofs.is_open())
 	{
 		archive::binary_oarchive oa(ofs);

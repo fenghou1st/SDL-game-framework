@@ -26,12 +26,7 @@ int main(int argc, char * argv [])
 		log::fatal(e.getMessage());
 		return 1;
 	}
-	catch (logic_error & e)
-	{
-		log::fatal(e.what());
-		return 1;
-	}
-	catch (runtime_error & e)
+	catch (exception & e)
 	{
 		log::fatal(e.what());
 		return 1;

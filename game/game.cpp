@@ -435,7 +435,7 @@ void Game::Impl::_update_state(float time_elapsed)
 		// 更新人物速度、位置 //////////////////////////////////////////////////////////////////////////////////////////
 
 		// 根据移动速度、环境情况计算阻力，减小速度
-		auto attenuation = 1 - 0.3f * time_elapsed;
+		auto attenuation = max(0.0f, 1 - 0.3f * time_elapsed);
 		character->vel.x *= attenuation;
 		character->vel.y *= attenuation;
 		character->vel.z *= attenuation;
