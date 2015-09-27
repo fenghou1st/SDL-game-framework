@@ -62,6 +62,7 @@ namespace sdl
 		SDL_FontPtr _font;
 		SDL_TexturePtr _character;
 		SDL_SurfacePtr _gui_surface;
+		SDL_TexturePtr _gui_texture;
 
 		gcn::SDLInput * _gcn_input;
 		gcn::SDLGraphics * _gcn_graphics;
@@ -69,7 +70,8 @@ namespace sdl
 		gcn::Gui * _gcn_gui;
 		gcn::Container * _gcn_top;
 		gcn::ImageFont * _gcn_font;
-		gcn::Label * _gcn_label;
+		gcn::Label * _main_menu_label;
+		gcn::Button * _main_menu_button;
 
 		vector<SDL_Rect> _char_clips;
 	};
@@ -117,10 +119,12 @@ namespace
 
 	const string CHAR_FILE = "character.png";
 	const string FONT_FILE = "msyh.ttc";
-	const string FONT_IMG_FILE = "fixedfont.bmp";
+	const string FONT_IMG_FILE = "rpgfont.png";
 	const int TILE_SIZE = 64;
 	const int FONT_SIZE = 36;
 	const SDL_Color FONT_COLOR = { 255, 255, 255, 255 };
+	const int MAIN_MENU_WIDTH = 400;
+	const int MAIN_MENU_HEIGHT = 300;
 }
 
 // Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +150,8 @@ bool Game::run() { return impl->run(); }
 Game::Impl::Impl()
 	: GameBase(ORG_NAME, APP_NAME), _ok(false),
 	_window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer),
-	_font(nullptr, TTF_CloseFont), _character(nullptr, SDL_DestroyTexture), _gui_surface(nullptr, SDL_FreeSurface)
+	_font(nullptr, TTF_CloseFont), _character(nullptr, SDL_DestroyTexture),
+	_gui_surface(nullptr, SDL_FreeSurface), _gui_texture(nullptr, SDL_DestroyTexture)
 {
 	if (!GameBase::is_ok())			{ log::error("GameBase::is_ok");				return; }
 
@@ -168,13 +173,14 @@ Game::Impl::~Impl()
 {
 	_state.save();
 
-	delete _gcn_label;
+	delete _main_menu_label;
 	delete _gcn_font;
 	delete _gcn_top;
 	delete _gcn_gui;
 	delete _gcn_input;
 	delete _gcn_graphics;
 	delete _gcn_imageLoader;
+	delete _main_menu_button;
 }
 
 
@@ -258,14 +264,24 @@ bool Game::Impl::_create_basic_objects()
 		return false;
 	}
 
-	//
+	// gui
 	_gui_surface = make_sdl_ptr(
-		SDL_CreateRGBSurface(0, _config.screen_width, _config.screen_height, 32, RMASK, GMASK, BMASK, AMASK));
+		SDL_CreateRGBSurface(0, MAIN_MENU_WIDTH, MAIN_MENU_HEIGHT, 32, RMASK, GMASK, BMASK, AMASK));
 	if (_gui_surface == nullptr)
 	{
 		log::error("SDL_CreateRGBSurface");
 		return false;
 	}
+
+	_gui_texture = make_sdl_ptr(SDL_CreateTexture(_renderer.get(),
+		PIXEL_FORMAT, SDL_TEXTUREACCESS_STREAMING, MAIN_MENU_WIDTH, MAIN_MENU_HEIGHT));
+	if (_gui_texture == nullptr)
+	{
+		log::error("SDL_CreateTexture");
+		return false;
+	}
+
+	SDL_SetTextureBlendMode(_gui_texture.get(), SDL_BLENDMODE_BLEND);
 
 	_gcn_imageLoader = new gcn::SDLImageLoader();
 	gcn::Image::setImageLoader(_gcn_imageLoader);
@@ -276,7 +292,8 @@ bool Game::Impl::_create_basic_objects()
 	_gcn_input = new gcn::SDLInput();
 
 	_gcn_top = new gcn::Container();
-	_gcn_top->setDimension(gcn::Rectangle(0, 0, _config.screen_width / 4, _config.screen_height / 8));
+	_gcn_top->setDimension(gcn::Rectangle(0, 0, MAIN_MENU_WIDTH, MAIN_MENU_HEIGHT));
+	_gcn_top->setBaseColor(gcn::Color(128, 255, 255, 255));
 
 	_gcn_gui = new gcn::Gui();
 	_gcn_gui->setGraphics(_gcn_graphics);
@@ -284,13 +301,14 @@ bool Game::Impl::_create_basic_objects()
 	_gcn_gui->setTop(_gcn_top);
 
 	auto font_path = GameBase::get_data_path() + "fonts" + PATH_SEP + FONT_IMG_FILE;
-	_gcn_font = new gcn::ImageFont(font_path, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+	_gcn_font = new gcn::ImageFont(font_path, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`'*#=[]\"");
 	gcn::Widget::setGlobalFont(_gcn_font);
 
-	_gcn_label = new gcn::Label("Hello World");
-	_gcn_label->setForegroundColor(gcn::Color(255, 255, 255));
-	_gcn_label->setPosition(10, 10);
-	_gcn_top->add(_gcn_label);
+	_main_menu_label = new gcn::Label("Hello world!");
+	_gcn_top->add(_main_menu_label, 10, 10);
+
+	_main_menu_button = new gcn::Button("Close");
+	_gcn_top->add(_main_menu_button, 330, 260);
 
 	return true;
 }
@@ -457,6 +475,12 @@ void Game::Impl::_update_state(float time_elapsed)
 
 void Game::Impl::_render()
 {
+	//
+	_gcn_gui->logic();
+	_gcn_gui->draw();
+	SDL_UpdateTexture(_gui_texture.get(), nullptr, _gui_surface->pixels, _gui_surface->pitch);
+
+	//
 	SDL_RenderClear(_renderer.get());
 
 	// tips
@@ -486,12 +510,8 @@ void Game::Impl::_render()
 		render_texture(_renderer, _character, &_char_clips[_state.self->appearance],
 			int(_state.self->pos.x), int(_state.self->pos.y));
 
-	//
-	_gcn_gui->logic();
-	_gcn_gui->draw();
-	/*** This line is very slow, the frame rate get down from 2300 to 36 ***/
-	auto _gcn_tex = make_sdl_ptr(SDL_CreateTextureFromSurface(_renderer.get(), _gui_surface.get()));
-	render_texture(_renderer, _gcn_tex, 0, 0, TEXTURE_ORIGIN::TOP_LEFT);
+	// gui
+	render_texture(_renderer, _gui_texture, _config.screen_width / 2, _config.screen_height / 2);
 
 	SDL_RenderPresent(_renderer.get());
 }

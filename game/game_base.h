@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+#include <SDL.h>
+
 #include "game/common.h"
 
 // User Interface //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,11 +46,13 @@ namespace sdl
 	const uint32_t GMASK = 0x00ff0000;
 	const uint32_t BMASK = 0x0000ff00;
 	const uint32_t AMASK = 0x000000ff;
+	const uint32_t PIXEL_FORMAT = SDL_PIXELFORMAT_ABGR8888;
 #else
 	const uint32_t RMASK = 0x000000ff;
 	const uint32_t GMASK = 0x0000ff00;
 	const uint32_t BMASK = 0x00ff0000;
 	const uint32_t AMASK = 0xff000000;
+	const uint32_t PIXEL_FORMAT = SDL_PIXELFORMAT_RGBA8888;
 #endif
 
 	const string DIR_BASE_BIN = "bin";
