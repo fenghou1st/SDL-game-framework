@@ -1,0 +1,20 @@
+
+chars:
+    - appearance: 0
+      hp: 100
+      pos: {x: 1000, y: 1000, z: 0}
+      vel: {x: 10, y: 10, z: 0}
+      ani: 0
+      ani_progress: 0
+      name: 主角
+      exp: 100
+      lvl: 1
+      str: 10
+      dex: 10
+      wiz: 10
+      stamina: 100
+      mana: 100
+      actions:
+          - {type: move, phi: 0, theta: 1.570795, power_ratio: 1}
+
+screen_tips: 中文UTF-8

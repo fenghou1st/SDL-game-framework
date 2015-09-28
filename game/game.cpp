@@ -69,6 +69,7 @@ namespace sdl
 		gcn::SDLImageLoader * _gcn_imageLoader;
 		gcn::Gui * _gcn_gui;
 		gcn::Container * _gcn_top;
+		gcn::Window * _gcn_window;
 		gcn::ImageFont * _gcn_font;
 		gcn::Label * _main_menu_label;
 		gcn::Button * _main_menu_button;
@@ -118,13 +119,11 @@ namespace
 	// Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////
 
 	const string CHAR_FILE = "character.png";
-	const string FONT_FILE = "msyh.ttc";
+	const string FONT_FILE = "wqy-zenhei.ttc";
 	const string FONT_IMG_FILE = "rpgfont.png";
 	const int TILE_SIZE = 64;
 	const int FONT_SIZE = 36;
 	const SDL_Color FONT_COLOR = { 255, 255, 255, 255 };
-	const int MAIN_MENU_WIDTH = 400;
-	const int MAIN_MENU_HEIGHT = 300;
 }
 
 // Global Variables ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +178,7 @@ Game::Impl::~Impl()
 	delete _gcn_gui;
 	delete _gcn_input;
 	delete _gcn_graphics;
+	delete _gcn_window;
 	delete _gcn_imageLoader;
 	delete _main_menu_button;
 }
@@ -266,7 +266,7 @@ bool Game::Impl::_create_basic_objects()
 
 	// gui
 	_gui_surface = make_sdl_ptr(
-		SDL_CreateRGBSurface(0, MAIN_MENU_WIDTH, MAIN_MENU_HEIGHT, 32, RMASK, GMASK, BMASK, AMASK));
+		SDL_CreateRGBSurface(0, _config.screen_width, _config.screen_height, 32, RMASK, GMASK, BMASK, AMASK));
 	if (_gui_surface == nullptr)
 	{
 		log::error("SDL_CreateRGBSurface");
@@ -274,7 +274,7 @@ bool Game::Impl::_create_basic_objects()
 	}
 
 	_gui_texture = make_sdl_ptr(SDL_CreateTexture(_renderer.get(),
-		PIXEL_FORMAT, SDL_TEXTUREACCESS_STREAMING, MAIN_MENU_WIDTH, MAIN_MENU_HEIGHT));
+		PIXEL_FORMAT, SDL_TEXTUREACCESS_STREAMING, _config.screen_width, _config.screen_height));
 	if (_gui_texture == nullptr)
 	{
 		log::error("SDL_CreateTexture");
@@ -292,8 +292,14 @@ bool Game::Impl::_create_basic_objects()
 	_gcn_input = new gcn::SDLInput();
 
 	_gcn_top = new gcn::Container();
-	_gcn_top->setDimension(gcn::Rectangle(0, 0, MAIN_MENU_WIDTH, MAIN_MENU_HEIGHT));
-	_gcn_top->setBaseColor(gcn::Color(128, 255, 255, 255));
+	_gcn_top->setDimension(gcn::Rectangle(0, 0, _config.screen_width, _config.screen_height));
+	_gcn_top->setBaseColor(gcn::Color(0, 255, 255, 255));
+
+	_gcn_window = new gcn::Window();
+	_gcn_window->setCaption("Main menu");
+	_gcn_window->setSize(400, 300);
+	_gcn_window->setBaseColor(gcn::Color(128, 255, 255, 255));
+	_gcn_top->add(_gcn_window, _config.screen_width / 2 - 400 / 2, _config.screen_height / 2 - 300 / 2);
 
 	_gcn_gui = new gcn::Gui();
 	_gcn_gui->setGraphics(_gcn_graphics);
@@ -305,10 +311,10 @@ bool Game::Impl::_create_basic_objects()
 	gcn::Widget::setGlobalFont(_gcn_font);
 
 	_main_menu_label = new gcn::Label("Hello world!");
-	_gcn_top->add(_main_menu_label, 10, 10);
+	_gcn_window->add(_main_menu_label, 10, 10);
 
 	_main_menu_button = new gcn::Button("Close");
-	_gcn_top->add(_main_menu_button, 330, 260);
+	_gcn_window->add(_main_menu_button, 330, 245);
 
 	return true;
 }
